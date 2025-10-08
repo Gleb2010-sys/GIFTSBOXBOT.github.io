@@ -101,6 +101,7 @@
             width: 100%;
             text-align: center;
             margin-bottom: 30px;
+            position: relative;
         }
 
         .balance-amount {
@@ -113,6 +114,31 @@
         .token-name {
             font-size: 18px;
             color: #a8c7e0;
+        }
+
+        .admin-refresh-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ffd700;
+            color: #0e2742;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+        }
+
+        .admin-refresh-button:hover {
+            background: #ffed4a;
+            transform: scale(1.05);
+        }
+
+        .admin-refresh-button:active {
+            transform: scale(0.95);
         }
 
         .box-container {
@@ -357,6 +383,7 @@
         <div class="token-balance">
             <div class="balance-amount" id="balance">0</div>
             <div class="token-name">Звёздные токены</div>
+            <button class="admin-refresh-button" id="adminRefreshButton" style="display: none;">+5000 🎯</button>
         </div>
 
         <div class="box-container">
@@ -381,7 +408,6 @@
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Блокировка всех действий с изображениями
         document.addEventListener('contextmenu', function(e) {
             if (e.target.tagName === 'IMG' || e.target.classList.contains('no-copy')) {
                 e.preventDefault();
@@ -424,7 +450,6 @@
         // ТВОЙ TELEGRAM ID
         const MY_TELEGRAM_ID = '8419434460';
 
-        // Уникальный ключ для хранения данных
         function getUserKey() {
             if (user && user.id) {
                 return `user_${user.id}`;
@@ -432,17 +457,14 @@
             return 'user_anonymous';
         }
 
-        // Инициализация пользователя с правильной логикой
         function initializeUser() {
             const userKey = getUserKey();
             const existingData = localStorage.getItem(userKey);
             
-            // Если данные уже есть, возвращаем их
             if (existingData) {
                 return JSON.parse(existingData);
             }
-            
-            // Создаем новые данные для пользователя
+
             const isOwner = user && user.id && user.id.toString() === MY_TELEGRAM_ID;
             const initialTokens = isOwner ? 5000 : 100;
             
@@ -458,18 +480,15 @@
             return newUserData;
         }
 
-        // Получение данных пользователя
         function getUserData() {
             return initializeUser();
         }
 
-        // Сохранение данных пользователя
         function saveUserData(data) {
             const userKey = getUserKey();
             localStorage.setItem(userKey, JSON.stringify(data));
         }
 
-        // Инициализация интерфейса пользователя
         function initializeUserInterface() {
             if (user) {
                 if (user.photo_url) {
@@ -489,7 +508,6 @@
             }
         }
 
-        // Инициализация при загрузке
         initializeUserInterface();
         const userData = getUserData();
         let tokens = userData.tokens || 0;
@@ -505,10 +523,11 @@
         const inventoryCount = document.getElementById('inventory-count');
         const withdrawButton = document.getElementById('withdrawButton');
         const specialBonusElement = document.getElementById('specialBonus');
+        const adminRefreshButton = document.getElementById('adminRefreshButton');
 
-        // Показываем специальный бонус если это владелец
         if (userData.isSpecialUser) {
             specialBonusElement.textContent = '⭐ Владелец бота - 5000 звёзд!';
+            adminRefreshButton.style.display = 'block';
             console.log('Обнаружен владелец бота!');
         }
 
@@ -538,6 +557,34 @@
                 chance: 24
             }
         ];
+
+        function adminAddStars() {
+            if (!userData.isSpecialUser) return;
+            
+            tokens += 5000;
+            
+            const saveData = {
+                tokens: tokens,
+                inventory: inventory,
+                initialized: true,
+                isSpecialUser: userData.isSpecialUser
+            };
+            saveUserData(saveData);
+            
+            updateBalance();
+
+            rewardValueElement.textContent = '+5000 звёзд! 🎉';
+            rewardValueElement.style.color = '#4CAF50';
+            
+            setTimeout(() => {
+                if (!box.classList.contains('open')) {
+                    rewardValueElement.textContent = '';
+                    rewardValueElement.style.color = '#ffd700';
+                }
+            }, 3000);
+            
+            console.log('Админ добавил 5000 звёзд. Новый баланс:', tokens);
+        }
 
         function getRandomReward() {
             const totalChance = rewards.reduce((sum, item) => sum + item.chance, 0);
@@ -574,7 +621,6 @@
             openButton.disabled = tokens < 100;
             openButton.textContent = tokens >= 100 ? 'Открыть за 100 токенов' : `Нужно ещё ${100 - tokens} токенов`;
             
-            // Сохраняем данные
             const saveData = {
                 tokens: tokens,
                 inventory: inventory,
@@ -694,9 +740,11 @@
         withdrawButton.addEventListener('click', function() {
             alert('Функция вывода скоро будет доступна!');
         });
+        adminRefreshButton.addEventListener('click', adminAddStars);
 
         updateBalance();
         updateInventory();
+
         console.log('Текущий пользователь:', user);
         console.log('ID пользователя:', user ? user.id : 'неизвестно');
         console.log('Мой ID:', MY_TELEGRAM_ID);
@@ -705,3 +753,4 @@
     </script>
 </body>
 </html>
+
