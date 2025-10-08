@@ -12,14 +12,20 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    
+    background-image: url('https://i.pinimg.com/originals/67/77/90/677790a3891d99a46c3816e67d1b5c39.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
 
         .background {
             position: fixed;
@@ -120,22 +126,6 @@
         
         <div class="username" id="username"></div>
         <div class="user-id" id="user-id"></div>
-        
-        <div class="info-item">
-            <span class="label">Telegram ID:</span> <span id="telegram-id"></span>
-        </div>
-        
-        <div class="info-item">
-            <span class="label">Имя:</span> <span id="first-name"></span>
-        </div>
-
-        <div class="admin-panel">
-            <h3>Настройка фона</h3>
-            <input type="url" 
-                   class="admin-input" 
-                   id="background-input" 
-                   placeholder="">
-        </div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -193,4 +183,6 @@
         }
     </script>
 </body>
+</html>
+
 </html>
