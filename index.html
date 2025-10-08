@@ -2,13 +2,26 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Мой Telegram Профиль</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
         }
 
         body {
@@ -16,6 +29,7 @@
             min-height: 100vh;
             padding: 20px;
             background-color: #182533;
+            touch-action: pan-x pan-y;
         }
 
         .profile-card {
@@ -26,7 +40,7 @@
             width: 100%;
             display: flex;
             align-items: center;
-            margin: 0 auto; 
+            margin: 0 auto;
         }
 
         .avatar {
@@ -43,11 +57,13 @@
             justify-content: center;
             color: white;
             font-size: 24px;
+            flex-shrink: 0;
         }
 
         .user-info {
             flex: 1;
             text-align: left;
+            min-width: 0;
         }
 
         .username {
@@ -55,11 +71,17 @@
             font-weight: bold;
             color: white;
             margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .user-id {
             font-size: 16px;
             color: #a8c7e0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -74,6 +96,17 @@
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        // Блокировка масштабирования
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            if(e.scale !== 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
         let user = null;
         
         if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) {
@@ -101,3 +134,4 @@
     </script>
 </body>
 </html>
+
