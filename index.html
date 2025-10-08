@@ -141,6 +141,31 @@
             transform: scale(0.95);
         }
 
+        .admin-reset-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(255, 68, 68, 0.4);
+        }
+
+        .admin-reset-button:hover {
+            background: #ff6666;
+            transform: scale(1.05);
+        }
+
+        .admin-reset-button:active {
+            transform: scale(0.95);
+        }
+
         .box-container {
             text-align: center;
             margin-bottom: 20px;
@@ -362,6 +387,60 @@
             margin-top: 5px;
             font-weight: bold;
         }
+
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirmation-content {
+            background: #2b5278;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 300px;
+            width: 90%;
+        }
+
+        .confirmation-text {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .confirm-button {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cancel-button {
+            background: #5e99c0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -384,6 +463,7 @@
             <div class="balance-amount" id="balance">0</div>
             <div class="token-name">Звёздные токены</div>
             <button class="admin-refresh-button" id="adminRefreshButton" style="display: none;">+5000 🎯</button>
+            <button class="admin-reset-button" id="adminResetButton" style="display: none;">Сброс 🔄</button>
         </div>
 
         <div class="box-container">
@@ -404,6 +484,16 @@
         </div>
 
         <button class="withdraw-button" id="withdrawButton" disabled>Вывести</button>
+    </div>
+
+    <div class="confirmation-modal" id="resetModal">
+        <div class="confirmation-content">
+            <div class="confirmation-text">Вы уверены, что хотите сбросить все данные? Это действие нельзя отменить!</div>
+            <div class="confirmation-buttons">
+                <button class="confirm-button" onclick="confirmReset()">Да, сбросить</button>
+                <button class="cancel-button" onclick="cancelReset()">Отмена</button>
+            </div>
+        </div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -447,7 +537,6 @@
             user = tg.initDataUnsafe.user;
         }
 
-        // ТВОЙ TELEGRAM ID
         const MY_TELEGRAM_ID = '8419434460';
 
         function getUserKey() {
@@ -457,14 +546,27 @@
             return 'user_anonymous';
         }
 
+        const DATA_VERSION = '2.0';
+
         function initializeUser() {
             const userKey = getUserKey();
             const existingData = localStorage.getItem(userKey);
-            
-            if (existingData) {
-                return JSON.parse(existingData);
-            }
 
+            if (existingData) {
+                const parsedData = JSON.parse(existingData);
+
+                if (!parsedData.version || parsedData.version !== DATA_VERSION) {
+                    console.log('Миграция данных на новую версию...');
+                    return createNewUserData();
+                }
+                
+                return parsedData;
+            }
+            
+            return createNewUserData();
+        }
+
+        function createNewUserData() {
             const isOwner = user && user.id && user.id.toString() === MY_TELEGRAM_ID;
             const initialTokens = isOwner ? 5000 : 100;
             
@@ -472,9 +574,13 @@
                 tokens: initialTokens,
                 inventory: [],
                 initialized: true,
-                isSpecialUser: isOwner
+                isSpecialUser: isOwner,
+                version: DATA_VERSION,
+                createdAt: new Date().toISOString(),
+                lastUpdated: new Date().toISOString()
             };
             
+            const userKey = getUserKey();
             localStorage.setItem(userKey, JSON.stringify(newUserData));
             console.log('Новый пользователь создан:', isOwner ? 'Владелец (5000)' : 'Обычный (100)');
             return newUserData;
@@ -486,7 +592,42 @@
 
         function saveUserData(data) {
             const userKey = getUserKey();
-            localStorage.setItem(userKey, JSON.stringify(data));
+
+            const dataToSave = {
+                ...data,
+                version: DATA_VERSION,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            try {
+                localStorage.setItem(userKey, JSON.stringify(dataToSave));
+                console.log('Данные успешно сохранены:', dataToSave);
+                return true;
+            } catch (error) {
+                console.error('Ошибка сохранения данных:', error);
+                return false;
+            }
+        }
+
+        function resetUserData() {
+            const userKey = getUserKey();
+            const isOwner = user && user.id && user.id.toString() === MY_TELEGRAM_ID;
+            
+            const resetData = {
+                tokens: isOwner ? 5000 : 100,
+                inventory: [],
+                initialized: true,
+                isSpecialUser: isOwner,
+                version: DATA_VERSION,
+                createdAt: new Date().toISOString(),
+                lastUpdated: new Date().toISOString(),
+                resetAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem(userKey, JSON.stringify(resetData));
+            console.log('Данные сброшены для пользователя:', userKey);
+            
+            return resetData;
         }
 
         function initializeUserInterface() {
@@ -509,7 +650,7 @@
         }
 
         initializeUserInterface();
-        const userData = getUserData();
+        let userData = getUserData();
         let tokens = userData.tokens || 0;
         let inventory = userData.inventory || [];
         let timerInterval = null;
@@ -524,10 +665,13 @@
         const withdrawButton = document.getElementById('withdrawButton');
         const specialBonusElement = document.getElementById('specialBonus');
         const adminRefreshButton = document.getElementById('adminRefreshButton');
+        const adminResetButton = document.getElementById('adminResetButton');
+        const resetModal = document.getElementById('resetModal');
 
         if (userData.isSpecialUser) {
             specialBonusElement.textContent = '⭐ Владелец бота - 5000 звёзд!';
             adminRefreshButton.style.display = 'block';
+            adminResetButton.style.display = 'block';
             console.log('Обнаружен владелец бота!');
         }
 
@@ -564,16 +708,45 @@
             tokens += 5000;
             
             const saveData = {
+                ...userData,
                 tokens: tokens,
-                inventory: inventory,
-                initialized: true,
-                isSpecialUser: userData.isSpecialUser
+                inventory: inventory
             };
-            saveUserData(saveData);
+            
+            if (saveUserData(saveData)) {
+                userData = saveData;
+                updateBalance();
+                
+                rewardValueElement.textContent = '+5000 звёзд! 🎉';
+                rewardValueElement.style.color = '#4CAF50';
+                
+                setTimeout(() => {
+                    if (!box.classList.contains('open')) {
+                        rewardValueElement.textContent = '';
+                        rewardValueElement.style.color = '#ffd700';
+                    }
+                }, 3000);
+                
+                console.log('Админ добавил 5000 звёзд. Новый баланс:', tokens);
+            }
+        }
+
+        function requestReset() {
+            if (!userData.isSpecialUser) return;
+            resetModal.style.display = 'flex';
+        }
+
+        function confirmReset() {
+            const newUserData = resetUserData();
+            userData = newUserData;
+            tokens = userData.tokens;
+            inventory = userData.inventory;
             
             updateBalance();
-
-            rewardValueElement.textContent = '+5000 звёзд! 🎉';
+            updateInventory();
+            resetModal.style.display = 'none';
+            
+            rewardValueElement.textContent = 'Данные сброшены! 🔄';
             rewardValueElement.style.color = '#4CAF50';
             
             setTimeout(() => {
@@ -583,7 +756,11 @@
                 }
             }, 3000);
             
-            console.log('Админ добавил 5000 звёзд. Новый баланс:', tokens);
+            console.log('Данные сброшены. Новый баланс:', tokens);
+        }
+
+        function cancelReset() {
+            resetModal.style.display = 'none';
         }
 
         function getRandomReward() {
@@ -622,12 +799,14 @@
             openButton.textContent = tokens >= 100 ? 'Открыть за 100 токенов' : `Нужно ещё ${100 - tokens} токенов`;
             
             const saveData = {
+                ...userData,
                 tokens: tokens,
-                inventory: inventory,
-                initialized: true,
-                isSpecialUser: userData.isSpecialUser
+                inventory: inventory
             };
-            saveUserData(saveData);
+            
+            if (saveUserData(saveData)) {
+                userData = saveData;
+            }
         }
 
         function updateInventory() {
@@ -654,22 +833,23 @@
             inventory.splice(index, 1);
             
             const saveData = {
+                ...userData,
                 tokens: tokens,
-                inventory: inventory,
-                initialized: true,
-                isSpecialUser: userData.isSpecialUser
+                inventory: inventory
             };
-            saveUserData(saveData);
             
-            updateBalance();
-            updateInventory();
-            
-            rewardValueElement.textContent = `Продано за ${item.value} токенов!`;
-            setTimeout(() => {
-                if (!box.classList.contains('open')) {
-                    rewardValueElement.textContent = '';
-                }
-            }, 2000);
+            if (saveUserData(saveData)) {
+                userData = saveData;
+                updateBalance();
+                updateInventory();
+                
+                rewardValueElement.textContent = `Продано за ${item.value} токенов!`;
+                setTimeout(() => {
+                    if (!box.classList.contains('open')) {
+                        rewardValueElement.textContent = '';
+                    }
+                }, 2000);
+            }
         }
 
         function startTimer(duration) {
@@ -693,37 +873,39 @@
             tokens -= 100;
             
             const saveData = {
+                ...userData,
                 tokens: tokens,
-                inventory: inventory,
-                initialized: true,
-                isSpecialUser: userData.isSpecialUser
+                inventory: inventory
             };
-            saveUserData(saveData);
             
-            updateBalance();
+            if (saveUserData(saveData)) {
+                userData = saveData;
+                updateBalance();
 
-            box.classList.remove('closed');
-            box.classList.add('open');
-            openButton.disabled = true;
-            
-            const randomReward = getRandomReward();
-            
-            setTimeout(() => {
-                box.innerHTML = `<img src="${randomReward.image}" alt="${randomReward.name}" class="reward-image no-copy">`;
-                rewardValueElement.textContent = `${randomReward.value} звёзд`;
+                box.classList.remove('closed');
+                box.classList.add('open');
+                openButton.disabled = true;
                 
-                inventory.push(randomReward);
+                const randomReward = getRandomReward();
                 
-                const newSaveData = {
-                    tokens: tokens,
-                    inventory: inventory,
-                    initialized: true,
-                    isSpecialUser: userData.isSpecialUser
-                };
-                saveUserData(newSaveData);
-                
-                startTimer(3);
-            }, 300);
+                setTimeout(() => {
+                    box.innerHTML = `<img src="${randomReward.image}" alt="${randomReward.name}" class="reward-image no-copy">`;
+                    rewardValueElement.textContent = `${randomReward.value} звёзд`;
+                    
+                    inventory.push(randomReward);
+                    
+                    const newSaveData = {
+                        ...userData,
+                        tokens: tokens,
+                        inventory: inventory
+                    };
+                    
+                    if (saveUserData(newSaveData)) {
+                        userData = newSaveData;
+                        startTimer(3);
+                    }
+                }, 300);
+            }
         }
 
         function resetBox() {
@@ -741,16 +923,20 @@
             alert('Функция вывода скоро будет доступна!');
         });
         adminRefreshButton.addEventListener('click', adminAddStars);
+        adminResetButton.addEventListener('click', requestReset);
 
         updateBalance();
         updateInventory();
 
+        console.log('=== СИСТЕМА ИНИЦИАЛИЗИРОВАНА ===');
         console.log('Текущий пользователь:', user);
         console.log('ID пользователя:', user ? user.id : 'неизвестно');
         console.log('Мой ID:', MY_TELEGRAM_ID);
         console.log('Это владелец:', userData.isSpecialUser);
         console.log('Текущие токены:', tokens);
+        console.log('Размер инвентаря:', inventory.length);
+        console.log('Версия данных:', userData.version);
+        console.log('============================');
     </script>
 </body>
 </html>
-
