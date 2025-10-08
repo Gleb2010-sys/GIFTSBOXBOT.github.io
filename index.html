@@ -28,8 +28,11 @@
             font-family: Arial, sans-serif;
             min-height: 100vh;
             padding: 20px;
-            background-color: #182533;
+            background-color: #0e2742;
             touch-action: pan-x pan-y;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .profile-card {
@@ -40,7 +43,7 @@
             width: 100%;
             display: flex;
             align-items: center;
-            margin: 0 auto;
+            margin-bottom: 20px;
         }
 
         .avatar {
@@ -83,6 +86,211 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+
+        .token-balance {
+            background: #2b5278;
+            border-radius: 15px;
+            padding: 15px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .token-name {
+            font-size: 18px;
+            color: #a8c7e0;
+        }
+
+        .box-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .box {
+            width: 200px;
+            height: 200px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .box:active {
+            transform: scale(0.95);
+        }
+
+        .box.closed::before {
+            content: "🎁";
+            font-size: 80px;
+        }
+
+        .box.open {
+            transform: scale(0.9);
+        }
+
+        .box.open::before {
+            content: "";
+        }
+
+        .reward-image {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            animation: appear 0.5s ease;
+            border-radius: 10px;
+        }
+
+        @keyframes appear {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .reward-value {
+            font-size: 18px;
+            color: #ffd700;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .open-button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .open-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .open-button:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .navigation {
+            display: flex;
+            gap: 15px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .nav-button {
+            flex: 1;
+            background: #2b5278;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .nav-button.active {
+            background: #5e99c0;
+        }
+
+        .page {
+            margin-top: 20px;
+            display: none;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .inventory-item {
+            background: #2b5278;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #5e99c0;
+            position: relative;
+        }
+
+        .inventory-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+
+        .item-value {
+            font-size: 12px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .sell-button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .withdraw-button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .withdraw-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .timer {
+            font-size: 14px;
+            color: #a8c7e0;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -94,9 +302,39 @@
         </div>
     </div>
 
+    <div class="navigation">
+        <button class="nav-button active" onclick="showPage('main')">Главная</button>
+        <button class="nav-button" onclick="showPage('inventory')">Инвентарь</button>
+    </div>
+
+    <div class="page active" id="main-page">
+        <div class="token-balance">
+            <div class="balance-amount" id="balance">0</div>
+            <div class="token-name">Звёздные токены</div>
+        </div>
+
+        <div class="box-container">
+            <div class="box closed" id="box"></div>
+            <button class="open-button" id="openButton" disabled>Открыть за 100 токенов</button>
+            <div class="reward-value" id="rewardValue"></div>
+            <div class="timer" id="timer"></div>
+        </div>
+    </div>
+
+    <div class="page" id="inventory-page">
+        <div class="token-balance">
+            <div class="balance-amount" id="inventory-count">0</div>
+            <div class="token-name">Предметов в инвентаре</div>
+        </div>
+
+        <div class="inventory-grid" id="inventory-grid">
+        </div>
+
+        <button class="withdraw-button" id="withdrawButton" disabled>Вывести</button>
+    </div>
+
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Блокировка масштабирования
         document.addEventListener('gesturestart', function(e) {
             e.preventDefault();
         });
@@ -131,7 +369,186 @@
             document.getElementById('username').textContent = 'Пользователь';
             document.getElementById('user-id').textContent = 'ID: не указан';
         }
+
+        // Проверяем, первый ли это вход пользователя
+        let isFirstVisit = localStorage.getItem('firstVisit') === null;
+        let tokens = parseInt(localStorage.getItem('userTokens')) || (isFirstVisit ? 100 : 0); 
+        let inventory = JSON.parse(localStorage.getItem('userInventory')) || [];
+        let timerInterval = null;
+
+        // Если первый вход, сохраняем это и даем бонус
+        if (isFirstVisit) {
+            localStorage.setItem('firstVisit', 'false');
+            localStorage.setItem('userTokens', tokens);
+        }
+
+        const box = document.getElementById('box');
+        const openButton = document.getElementById('openButton');
+        const balanceElement = document.getElementById('balance');
+        const rewardValueElement = document.getElementById('rewardValue');
+        const timerElement = document.getElementById('timer');
+        const inventoryGrid = document.getElementById('inventory-grid');
+        const inventoryCount = document.getElementById('inventory-count');
+        const withdrawButton = document.getElementById('withdrawButton');
+
+        const rewards = [
+            { 
+                image: 'https://s.iimg.su/s/08/gHCfLJrxWk6T7YSleWFZQ6mhNmMizJNwOALAU0er.png', 
+                name: 'Шляпа', 
+                value: 1300,
+                chance: 2 // 2% шанс
+            },
+            { 
+                image: 'https://s.iimg.su/s/08/gG2ENFkxrVGCwWokHcaaIp6HnzEbezCw9qsc1FZm.png', 
+                name: 'Подарок', 
+                value: 25,
+                chance: 18 // 18% шанс
+            },
+            { 
+                image: 'https://s.iimg.su/s/08/gcunIRixc1LSpuflhT9yHKb80ySAGNgHGs8tnzAf.png', 
+                name: 'Кольцо', 
+                value: 100,
+                chance: 30 // 30% шанс
+            },
+            { 
+                image: 'https://s.iimg.su/s/08/gGJh283xtNVKXiOBgKUzyuBkGmpiSe9uQsy6XYfI.png', 
+                name: 'Алмаз', 
+                value: 100,
+                chance: 50 // 50% шанс
+            }
+        ];
+
+        function getRandomReward() {
+            const totalChance = rewards.reduce((sum, item) => sum + item.chance, 0);
+            let random = Math.random() * totalChance;
+            
+            for (let item of rewards) {
+                if (random < item.chance) {
+                    return item;
+                }
+                random -= item.chance;
+            }
+            
+            return rewards[rewards.length - 1]; 
+        }
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            document.getElementById(`${pageName}-page`).classList.add('active');
+            document.querySelector(`.nav-button[onclick="showPage('${pageName}')"]`).classList.add('active');
+            
+            if (pageName === 'inventory') {
+                updateInventory();
+            }
+        }
+
+        function updateBalance() {
+            balanceElement.textContent = tokens;
+            openButton.disabled = tokens < 100;
+            openButton.textContent = tokens >= 100 ? 'Открыть за 100 токенов' : `Нужно ещё ${100 - tokens} токенов`;
+        }
+
+        function updateInventory() {
+            inventoryGrid.innerHTML = '';
+            inventoryCount.textContent = inventory.length;
+            
+            inventory.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'inventory-item';
+                itemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="inventory-image">
+                    <div class="item-value">${item.value} звёзд</div>
+                    <button class="sell-button" onclick="sellItem(${index})">Продать</button>
+                `;
+                inventoryGrid.appendChild(itemElement);
+            });
+            
+            withdrawButton.disabled = inventory.length === 0;
+        }
+
+        function sellItem(index) {
+            const item = inventory[index];
+            tokens += item.value;
+            inventory.splice(index, 1);
+            
+            localStorage.setItem('userTokens', tokens);
+            localStorage.setItem('userInventory', JSON.stringify(inventory));
+            
+            updateBalance();
+            updateInventory();
+            
+            rewardValueElement.textContent = `Продано за ${item.value} токенов!`;
+            setTimeout(() => {
+                if (!box.classList.contains('open')) {
+                    rewardValueElement.textContent = '';
+                }
+            }, 2000);
+        }
+
+        function startTimer(duration) {
+            let timeLeft = duration;
+            
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    resetBox();
+                }
+            }, 1000);
+        }
+
+        function openBox() {
+            if (tokens < 100) return;
+
+            tokens -= 100;
+            localStorage.setItem('userTokens', tokens);
+            updateBalance();
+
+            box.classList.remove('closed');
+            box.classList.add('open');
+            openButton.disabled = true;
+            
+            const randomReward = getRandomReward();
+            
+            setTimeout(() => {
+                box.innerHTML = `<img src="${randomReward.image}" alt="${randomReward.name}" class="reward-image">`;
+                rewardValueElement.textContent = `${randomReward.value} звёзд`;
+                
+                inventory.push(randomReward);
+                localStorage.setItem('userInventory', JSON.stringify(inventory));
+                
+                startTimer(3);
+            }, 300);
+        }
+
+        function resetBox() {
+            box.classList.remove('open');
+            box.classList.add('closed');
+            box.innerHTML = '';
+            rewardValueElement.textContent = '';
+            timerElement.textContent = '';
+            openButton.disabled = tokens < 100;
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        openButton.addEventListener('click', openBox);
+        withdrawButton.addEventListener('click', function() {
+            alert('Функция вывода скоро будет доступна!');
+        });
+
+        updateBalance();
+        updateInventory();
     </script>
 </body>
 </html>
+
 
