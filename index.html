@@ -381,6 +381,7 @@
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        // Блокировка всех действий с изображениями
         document.addEventListener('contextmenu', function(e) {
             if (e.target.tagName === 'IMG' || e.target.classList.contains('no-copy')) {
                 e.preventDefault();
@@ -420,65 +421,76 @@
             user = tg.initDataUnsafe.user;
         }
 
-        const MY_TELEGRAM_ID = '8419434460'; 
+        // ТВОЙ TELEGRAM ID
+        const MY_TELEGRAM_ID = '8419434460';
 
+        // Уникальный ключ для хранения данных
+        function getUserKey() {
+            if (user && user.id) {
+                return `user_${user.id}`;
+            }
+            return 'user_anonymous';
+        }
+
+        // Инициализация пользователя с правильной логикой
         function initializeUser() {
-            const userId = user ? user.id.toString() : 'anonymous';
-            const userKey = `user_${userId}`;
-            const userData = JSON.parse(localStorage.getItem(userKey));
+            const userKey = getUserKey();
+            const existingData = localStorage.getItem(userKey);
             
-            if (!userData) {
-                const isMyAccount = user && user.id.toString() === MY_TELEGRAM_ID;
-                const bonusTokens = isMyAccount ? 5000 : 100;
-                
-                const newUserData = {
-                    tokens: bonusTokens,
-                    inventory: [],
-                    initialized: true,
-                    isSpecialUser: isMyAccount
-                };
-                localStorage.setItem(userKey, JSON.stringify(newUserData));
-                return newUserData;
+            // Если данные уже есть, возвращаем их
+            if (existingData) {
+                return JSON.parse(existingData);
             }
             
-            return userData;
+            // Создаем новые данные для пользователя
+            const isOwner = user && user.id && user.id.toString() === MY_TELEGRAM_ID;
+            const initialTokens = isOwner ? 5000 : 100;
+            
+            const newUserData = {
+                tokens: initialTokens,
+                inventory: [],
+                initialized: true,
+                isSpecialUser: isOwner
+            };
+            
+            localStorage.setItem(userKey, JSON.stringify(newUserData));
+            console.log('Новый пользователь создан:', isOwner ? 'Владелец (5000)' : 'Обычный (100)');
+            return newUserData;
         }
 
+        // Получение данных пользователя
         function getUserData() {
-            const userId = user ? user.id.toString() : 'anonymous';
-            const userKey = `user_${userId}`;
-            const userData = JSON.parse(localStorage.getItem(userKey));
-            
-            if (!userData) {
-                return initializeUser();
-            }
-            
-            return userData;
+            return initializeUser();
         }
 
+        // Сохранение данных пользователя
         function saveUserData(data) {
-            const userId = user ? user.id.toString() : 'anonymous';
-            const userKey = `user_${userId}`;
+            const userKey = getUserKey();
             localStorage.setItem(userKey, JSON.stringify(data));
         }
 
-        if (user) {
-            if (user.photo_url) {
-                document.getElementById('avatar').style.backgroundImage = `url(${user.photo_url})`;
-                document.getElementById('avatar').textContent = '';
-            }
-            if (user.username) {
-                document.getElementById('username').textContent = user.username;
+        // Инициализация интерфейса пользователя
+        function initializeUserInterface() {
+            if (user) {
+                if (user.photo_url) {
+                    document.getElementById('avatar').style.backgroundImage = `url(${user.photo_url})`;
+                    document.getElementById('avatar').textContent = '';
+                }
+                if (user.username) {
+                    document.getElementById('username').textContent = user.username;
+                } else {
+                    document.getElementById('username').textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Пользователь';
+                }
+                document.getElementById('user-id').textContent = `ID: ${user.id}`;
             } else {
-                document.getElementById('username').textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Пользователь';
+                document.getElementById('avatar').textContent = 'U';
+                document.getElementById('username').textContent = 'Пользователь';
+                document.getElementById('user-id').textContent = 'ID: не указан';
             }
-            document.getElementById('user-id').textContent = `ID: ${user.id}`;
-        } else {
-            document.getElementById('avatar').textContent = 'U';
-            document.getElementById('username').textContent = 'Пользователь';
-            document.getElementById('user-id').textContent = 'ID: не указан';
         }
 
+        // Инициализация при загрузке
+        initializeUserInterface();
         const userData = getUserData();
         let tokens = userData.tokens || 0;
         let inventory = userData.inventory || [];
@@ -494,9 +506,10 @@
         const withdrawButton = document.getElementById('withdrawButton');
         const specialBonusElement = document.getElementById('specialBonus');
 
-        // Показываем специальный бонус если это мой аккаунт
+        // Показываем специальный бонус если это владелец
         if (userData.isSpecialUser) {
-            specialBonusElement.textContent = '⭐ Владелец бота - 2000 звёзд!';
+            specialBonusElement.textContent = '⭐ Владелец бота - 5000 звёзд!';
+            console.log('Обнаружен владелец бота!');
         }
 
         const rewards = [
@@ -561,12 +574,14 @@
             openButton.disabled = tokens < 100;
             openButton.textContent = tokens >= 100 ? 'Открыть за 100 токенов' : `Нужно ещё ${100 - tokens} токенов`;
             
-            saveUserData({
+            // Сохраняем данные
+            const saveData = {
                 tokens: tokens,
                 inventory: inventory,
                 initialized: true,
                 isSpecialUser: userData.isSpecialUser
-            });
+            };
+            saveUserData(saveData);
         }
 
         function updateInventory() {
@@ -592,12 +607,13 @@
             tokens += item.value;
             inventory.splice(index, 1);
             
-            saveUserData({
+            const saveData = {
                 tokens: tokens,
                 inventory: inventory,
                 initialized: true,
                 isSpecialUser: userData.isSpecialUser
-            });
+            };
+            saveUserData(saveData);
             
             updateBalance();
             updateInventory();
@@ -630,12 +646,13 @@
 
             tokens -= 100;
             
-            saveUserData({
+            const saveData = {
                 tokens: tokens,
                 inventory: inventory,
                 initialized: true,
                 isSpecialUser: userData.isSpecialUser
-            });
+            };
+            saveUserData(saveData);
             
             updateBalance();
 
@@ -651,12 +668,13 @@
                 
                 inventory.push(randomReward);
                 
-                saveUserData({
+                const newSaveData = {
                     tokens: tokens,
                     inventory: inventory,
                     initialized: true,
                     isSpecialUser: userData.isSpecialUser
-                });
+                };
+                saveUserData(newSaveData);
                 
                 startTimer(3);
             }, 300);
@@ -679,6 +697,11 @@
 
         updateBalance();
         updateInventory();
+        console.log('Текущий пользователь:', user);
+        console.log('ID пользователя:', user ? user.id : 'неизвестно');
+        console.log('Мой ID:', MY_TELEGRAM_ID);
+        console.log('Это владелец:', userData.isSpecialUser);
+        console.log('Текущие токены:', tokens);
     </script>
 </body>
 </html>
