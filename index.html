@@ -61,6 +61,12 @@
             color: white;
             font-size: 24px;
             flex-shrink: 0;
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
         }
 
         .user-info {
@@ -126,6 +132,11 @@
             transition: all 0.2s ease;
             position: relative;
             overflow: hidden;
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
         }
 
         .box:active {
@@ -151,6 +162,12 @@
             object-fit: contain;
             animation: appear 0.5s ease;
             border-radius: 10px;
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
         }
 
         @keyframes appear {
@@ -247,6 +264,12 @@
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 5px;
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
         }
 
         .item-value {
@@ -291,11 +314,26 @@
             color: #a8c7e0;
             margin-top: 5px;
         }
+
+        .no-copy {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
     <div class="profile-card">
-        <div class="avatar" id="avatar">U</div>
+        <div class="avatar no-copy" id="avatar">U</div>
         <div class="user-info">
             <div class="username" id="username">Пользователь</div>
             <div class="user-id" id="user-id">ID: не указан</div>
@@ -314,7 +352,7 @@
         </div>
 
         <div class="box-container">
-            <div class="box closed" id="box"></div>
+            <div class="box closed no-copy" id="box"></div>
             <button class="open-button" id="openButton" disabled>Открыть за 100 токенов</button>
             <div class="reward-value" id="rewardValue"></div>
             <div class="timer" id="timer"></div>
@@ -335,6 +373,27 @@
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.tagName === 'IMG' || e.target.classList.contains('no-copy')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.tagName === 'IMG' || e.target.classList.contains('no-copy')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.tagName === 'IMG' || e.target.classList.contains('no-copy')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
         document.addEventListener('gesturestart', function(e) {
             e.preventDefault();
         });
@@ -351,6 +410,46 @@
             const tg = window.Telegram.WebApp;
             tg.expand();
             user = tg.initDataUnsafe.user;
+        }
+
+        // Система бонусов для новых пользователей
+        function initializeUser() {
+            const userId = user ? user.id.toString() : 'anonymous';
+            const userKey = `user_${userId}`;
+            const userData = JSON.parse(localStorage.getItem(userKey));
+            
+            if (!userData) {
+                // Новый пользователь - даем 100 звезд
+                const newUserData = {
+                    tokens: 100,
+                    inventory: [],
+                    initialized: true
+                };
+                localStorage.setItem(userKey, JSON.stringify(newUserData));
+                return newUserData;
+            }
+            
+            return userData;
+        }
+
+        // Получение данных пользователя
+        function getUserData() {
+            const userId = user ? user.id.toString() : 'anonymous';
+            const userKey = `user_${userId}`;
+            const userData = JSON.parse(localStorage.getItem(userKey));
+            
+            if (!userData) {
+                return initializeUser();
+            }
+            
+            return userData;
+        }
+
+        // Сохранение данных пользователя
+        function saveUserData(data) {
+            const userId = user ? user.id.toString() : 'anonymous';
+            const userKey = `user_${userId}`;
+            localStorage.setItem(userKey, JSON.stringify(data));
         }
 
         if (user) {
@@ -370,17 +469,11 @@
             document.getElementById('user-id').textContent = 'ID: не указан';
         }
 
-        // Проверяем, первый ли это вход пользователя
-        let isFirstVisit = localStorage.getItem('firstVisit') === null;
-        let tokens = parseInt(localStorage.getItem('userTokens')) || (isFirstVisit ? 100 : 0); 
-        let inventory = JSON.parse(localStorage.getItem('userInventory')) || [];
+        // Инициализация данных пользователя
+        const userData = getUserData();
+        let tokens = userData.tokens || 0;
+        let inventory = userData.inventory || [];
         let timerInterval = null;
-
-        // Если первый вход, сохраняем это и даем бонус
-        if (isFirstVisit) {
-            localStorage.setItem('firstVisit', 'false');
-            localStorage.setItem('userTokens', tokens);
-        }
 
         const box = document.getElementById('box');
         const openButton = document.getElementById('openButton');
@@ -396,25 +489,25 @@
                 image: 'https://s.iimg.su/s/08/gHCfLJrxWk6T7YSleWFZQ6mhNmMizJNwOALAU0er.png', 
                 name: 'Шляпа', 
                 value: 1300,
-                chance: 2 // 2% шанс
+                chance: 2
             },
             { 
                 image: 'https://s.iimg.su/s/08/gG2ENFkxrVGCwWokHcaaIp6HnzEbezCw9qsc1FZm.png', 
                 name: 'Подарок', 
                 value: 25,
-                chance: 18 // 18% шанс
+                chance: 50
             },
             { 
                 image: 'https://s.iimg.su/s/08/gcunIRixc1LSpuflhT9yHKb80ySAGNgHGs8tnzAf.png', 
                 name: 'Кольцо', 
                 value: 100,
-                chance: 30 // 30% шанс
+                chance: 24
             },
             { 
                 image: 'https://s.iimg.su/s/08/gGJh283xtNVKXiOBgKUzyuBkGmpiSe9uQsy6XYfI.png', 
                 name: 'Алмаз', 
                 value: 100,
-                chance: 50 // 50% шанс
+                chance: 24
             }
         ];
 
@@ -452,6 +545,12 @@
             balanceElement.textContent = tokens;
             openButton.disabled = tokens < 100;
             openButton.textContent = tokens >= 100 ? 'Открыть за 100 токенов' : `Нужно ещё ${100 - tokens} токенов`;
+            
+            saveUserData({
+                tokens: tokens,
+                inventory: inventory,
+                initialized: true
+            });
         }
 
         function updateInventory() {
@@ -462,7 +561,7 @@
                 const itemElement = document.createElement('div');
                 itemElement.className = 'inventory-item';
                 itemElement.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}" class="inventory-image">
+                    <img src="${item.image}" alt="${item.name}" class="inventory-image no-copy">
                     <div class="item-value">${item.value} звёзд</div>
                     <button class="sell-button" onclick="sellItem(${index})">Продать</button>
                 `;
@@ -477,8 +576,11 @@
             tokens += item.value;
             inventory.splice(index, 1);
             
-            localStorage.setItem('userTokens', tokens);
-            localStorage.setItem('userInventory', JSON.stringify(inventory));
+            saveUserData({
+                tokens: tokens,
+                inventory: inventory,
+                initialized: true
+            });
             
             updateBalance();
             updateInventory();
@@ -510,7 +612,13 @@
             if (tokens < 100) return;
 
             tokens -= 100;
-            localStorage.setItem('userTokens', tokens);
+            
+            saveUserData({
+                tokens: tokens,
+                inventory: inventory,
+                initialized: true
+            });
+            
             updateBalance();
 
             box.classList.remove('closed');
@@ -520,11 +628,16 @@
             const randomReward = getRandomReward();
             
             setTimeout(() => {
-                box.innerHTML = `<img src="${randomReward.image}" alt="${randomReward.name}" class="reward-image">`;
+                box.innerHTML = `<img src="${randomReward.image}" alt="${randomReward.name}" class="reward-image no-copy">`;
                 rewardValueElement.textContent = `${randomReward.value} звёзд`;
                 
                 inventory.push(randomReward);
-                localStorage.setItem('userInventory', JSON.stringify(inventory));
+                
+                saveUserData({
+                    tokens: tokens,
+                    inventory: inventory,
+                    initialized: true
+                });
                 
                 startTimer(3);
             }, 300);
