@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Telegram Профиль</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background-size: cover;
+            background-position: center;
+            border: 5px solid #0088cc;
+        }
+
+        .username {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .user-id {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #0088cc;
+        }
+
+        .admin-panel {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .admin-button {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .admin-button:hover {
+            background: #006699;
+        }
+    </style>
+</head>
+<body>
+    <div class="background" id="background"></div>
+    
+    <div class="profile-card">
+        <div class="avatar" id="avatar"></div>
+        
+        <div class="username" id="username"></div>
+        <div class="user-id" id="user-id"></div>
+        
+        <div class="info-item">
+            <span class="label">Telegram ID:</span> <span id="telegram-id"></span>
+        </div>
+        
+        <div class="info-item">
+            <span class="label">Имя:</span> <span id="first-name"></span>
+        </div>
+
+        <div class="admin-panel">
+            <h3>Настройка фона</h3>
+            <input type="url" 
+                   class="admin-input" 
+                   id="background-input" 
+                   placeholder="">
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
+        const user = tg.initDataUnsafe.user;
+        if (user) {
+            if (user.photo_url) {
+                document.getElementById('avatar').style.backgroundImage = `url(${user.photo_url})`;
+            }
+            if (user.username) {
+                document.getElementById('username').textContent = user.username;
+            } else {
+                document.getElementById('username').textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+            }
+            document.getElementById('user-id').textContent = `ID: ${user.id}`;
+            document.getElementById('telegram-id').textContent = user.id;
+            document.getElementById('first-name').textContent = user.first_name || 'Не указано';
+            document.getElementById('last-name').textContent = user.last_name || 'Не указано';
+        }
+
+        function setBackground() {
+            const backgroundUrl = document.getElementById('background-input').value;
+            
+            if (backgroundUrl) {
+                localStorage.setItem('customBackground', backgroundUrl);
+                
+                document.getElementById('background').style.backgroundImage = `url(${backgroundUrl})`;
+                
+                tg.showPopup({
+                    title: 'Успех!',
+                    message: 'Фон успешно установлен',
+                    buttons: [{ type: 'ok' }]
+                });
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedBackground = localStorage.getItem('customBackground');
+            if (savedBackground) {
+                document.getElementById('background').style.backgroundImage = `url(${savedBackground})`;
+                document.getElementById('background-input').value = savedBackground;
+            }
+        });
+
+        if (!user) {
+            document.body.innerHTML = `
+                <div style="text-align: center; color: white; background: rgba(0,0,0,0.8); padding: 40px; border-radius: 20px;">
+                    <h2>Откройте эту страницу через Telegram бота</h2>
+                    <p>Для отображения вашего профиля необходимо открыть страницу через Telegram</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
