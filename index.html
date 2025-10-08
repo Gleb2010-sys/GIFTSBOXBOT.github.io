@@ -329,6 +329,13 @@
             user-drag: none;
             pointer-events: none;
         }
+
+        .special-bonus {
+            color: #ffd700;
+            font-size: 12px;
+            margin-top: 5px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -337,6 +344,7 @@
         <div class="user-info">
             <div class="username" id="username">Пользователь</div>
             <div class="user-id" id="user-id">ID: не указан</div>
+            <div class="special-bonus" id="specialBonus"></div>
         </div>
     </div>
 
@@ -353,8 +361,8 @@
 
         <div class="box-container">
             <div class="box closed no-copy" id="box"></div>
-            <button class="open-button" id="openButton" disabled>Открыть за 100 токенов</button>
             <div class="reward-value" id="rewardValue"></div>
+            <button class="open-button" id="openButton" disabled>Открыть за 100 токенов</button>
             <div class="timer" id="timer"></div>
         </div>
     </div>
@@ -412,18 +420,22 @@
             user = tg.initDataUnsafe.user;
         }
 
-        // Система бонусов для новых пользователей
+        const MY_TELEGRAM_ID = '8419434460'; 
+
         function initializeUser() {
             const userId = user ? user.id.toString() : 'anonymous';
             const userKey = `user_${userId}`;
             const userData = JSON.parse(localStorage.getItem(userKey));
             
             if (!userData) {
-                // Новый пользователь - даем 100 звезд
+                const isMyAccount = user && user.id.toString() === MY_TELEGRAM_ID;
+                const bonusTokens = isMyAccount ? 5000 : 100;
+                
                 const newUserData = {
-                    tokens: 100,
+                    tokens: bonusTokens,
                     inventory: [],
-                    initialized: true
+                    initialized: true,
+                    isSpecialUser: isMyAccount
                 };
                 localStorage.setItem(userKey, JSON.stringify(newUserData));
                 return newUserData;
@@ -432,7 +444,6 @@
             return userData;
         }
 
-        // Получение данных пользователя
         function getUserData() {
             const userId = user ? user.id.toString() : 'anonymous';
             const userKey = `user_${userId}`;
@@ -445,7 +456,6 @@
             return userData;
         }
 
-        // Сохранение данных пользователя
         function saveUserData(data) {
             const userId = user ? user.id.toString() : 'anonymous';
             const userKey = `user_${userId}`;
@@ -469,7 +479,6 @@
             document.getElementById('user-id').textContent = 'ID: не указан';
         }
 
-        // Инициализация данных пользователя
         const userData = getUserData();
         let tokens = userData.tokens || 0;
         let inventory = userData.inventory || [];
@@ -483,6 +492,12 @@
         const inventoryGrid = document.getElementById('inventory-grid');
         const inventoryCount = document.getElementById('inventory-count');
         const withdrawButton = document.getElementById('withdrawButton');
+        const specialBonusElement = document.getElementById('specialBonus');
+
+        // Показываем специальный бонус если это мой аккаунт
+        if (userData.isSpecialUser) {
+            specialBonusElement.textContent = '⭐ Владелец бота - 2000 звёзд!';
+        }
 
         const rewards = [
             { 
@@ -549,7 +564,8 @@
             saveUserData({
                 tokens: tokens,
                 inventory: inventory,
-                initialized: true
+                initialized: true,
+                isSpecialUser: userData.isSpecialUser
             });
         }
 
@@ -579,7 +595,8 @@
             saveUserData({
                 tokens: tokens,
                 inventory: inventory,
-                initialized: true
+                initialized: true,
+                isSpecialUser: userData.isSpecialUser
             });
             
             updateBalance();
@@ -616,7 +633,8 @@
             saveUserData({
                 tokens: tokens,
                 inventory: inventory,
-                initialized: true
+                initialized: true,
+                isSpecialUser: userData.isSpecialUser
             });
             
             updateBalance();
@@ -636,7 +654,8 @@
                 saveUserData({
                     tokens: tokens,
                     inventory: inventory,
-                    initialized: true
+                    initialized: true,
+                    isSpecialUser: userData.isSpecialUser
                 });
                 
                 startTimer(3);
@@ -663,5 +682,3 @@
     </script>
 </body>
 </html>
-
-
