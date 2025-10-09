@@ -5,484 +5,650 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Мой Telegram Профиль</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+    }
 
-        html, body {
-            overflow-x: hidden;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-        }
+    html, body {
+        overflow-x: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            padding: 20px;
-            background-color: #0e2742;
-            touch-action: pan-x pan-y;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    body {
+        font-family: 'Arial', sans-serif;
+        min-height: 100vh;
+        padding: 20px;
+        background: linear-gradient(135deg, #000000);
+        touch-action: pan-x pan-y;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-        .profile-card {
-            background: #2b5278;
-            border-radius: 15px;
-            padding: 15px;
-            max-width: 400px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+    .profile-card {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4a 50%, #ffd700 100%);
+        border-radius: 20px;
+        padding: 20px;
+        max-width: 400px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        border: 2px solid #ffed4a;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            border: 3px solid #5e99c0;
-            margin-right: 20px;
-            background-color: #5e99c0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            flex-shrink: 0;
-            -webkit-user-drag: none;
-            -khtml-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
-            user-drag: none;
-            pointer-events: none;
-        }
+    .profile-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: rotate(45deg);
+        animation: shine 3s infinite;
+    }
 
-        .user-info {
-            flex: 1;
-            text-align: left;
-            min-width: 0;
-        }
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
 
-        .username {
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 5px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+    .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        border: 3px solid #000000;
+        margin-right: 20px;
+        background: linear-gradient(135deg, #000000 0%, #333333 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffd700;
+        font-size: 28px;
+        font-weight: bold;
+        flex-shrink: 0;
+        -webkit-user-drag: none;
+        user-drag: none;
+        pointer-events: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        position: relative;
+        z-index: 2;
+    }
 
-        .user-id {
-            font-size: 16px;
-            color: #a8c7e0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+    .user-info {
+        flex: 1;
+        text-align: left;
+        min-width: 0;
+        position: relative;
+        z-index: 2;
+    }
 
-        .token-balance {
-            background: #2b5278;
-            border-radius: 15px;
-            padding: 15px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
+    .username {
+        font-size: 22px;
+        font-weight: bold;
+        color: #000000;
+        margin-bottom: 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+    }
 
-        .balance-amount {
-            font-size: 32px;
-            font-weight: bold;
-            color: #ffd700;
-            margin-bottom: 5px;
-        }
+    .user-id {
+        font-size: 16px;
+        color: #333333;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 600;
+    }
 
-        .token-name {
-            font-size: 18px;
-            color: #a8c7e0;
-        }
+    .token-balance {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border-radius: 20px;
+        padding: 25px 20px;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 30px;
+        position: relative;
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+        border: 2px solid #ffd700;
+    }
 
-        .admin-refresh-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ffd700;
-            color: #0e2742;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
-        }
+    .balance-amount {
+        font-size: 42px;
+        font-weight: bold;
+        color: #ffd700;
+        margin-bottom: 8px;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        background: linear-gradient(45deg, #ffd700, #ffed4a, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-size: 200% 200%;
+        animation: shimmer 2s ease-in-out infinite;
+    }
 
-        .admin-refresh-button:hover {
-            background: #ffed4a;
-            transform: scale(1.05);
-        }
+    @keyframes shimmer {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
 
-        .admin-refresh-button:active {
-            transform: scale(0.95);
-        }
+    .token-name {
+        font-size: 18px;
+        color: #ffed4a;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
 
-        .admin-reset-button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(255, 68, 68, 0.4);
-        }
+    .admin-refresh-button {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+        color: #000000;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        border: 2px solid #000000;
+    }
 
-        .admin-reset-button:hover {
-            background: #ff6666;
-            transform: scale(1.05);
-        }
+    .admin-refresh-button:hover {
+        background: linear-gradient(135deg, #ffed4a 0%, #ffff80 100%);
+        transform: scale(1.05);
+    }
 
-        .admin-reset-button:active {
-            transform: scale(0.95);
-        }
+    .admin-refresh-button:active {
+        transform: scale(0.95);
+    }
 
-        .box-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    .admin-reset-button {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: linear-gradient(135deg, #ff4444 0%, #ff6666 100%);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4);
+        border: 2px solid #ffffff;
+    }
 
-        .box {
-            width: 200px;
-            height: 200px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-            -webkit-user-drag: none;
-            -khtml-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
-            user-drag: none;
-        }
+    .admin-reset-button:hover {
+        background: linear-gradient(135deg, #ff6666 0%, #ff8888 100%);
+        transform: scale(1.05);
+    }
 
-        .box:active {
-            transform: scale(0.95);
-        }
+    .admin-reset-button:active {
+        transform: scale(0.95);
+    }
 
-        .box.closed::before {
-            content: "🎁";
-            font-size: 80px;
-        }
+    .navigation {
+        display: flex;
+        gap: 12px;
+        max-width: 400px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
 
-        .box.open {
-            transform: scale(0.9);
-        }
+    .nav-button {
+        flex: 1;
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        color: #ffd700;
+        border: 2px solid #ffd700;
+        padding: 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+    }
 
-        .box.open::before {
-            content: "";
-        }
+    .nav-button.active {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+        color: #000000;
+        border-color: #000000;
+        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    }
 
-        .reward-image {
-            width: 120px;
-            height: 120px;
-            object-fit: contain;
-            animation: appear 0.5s ease;
-            border-radius: 10px;
-            -webkit-user-drag: none;
-            -khtml-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
-            user-drag: none;
-            pointer-events: none;
-        }
+    .nav-button:hover:not(.active) {
+        background: linear-gradient(135deg, #3d3d3d 0%, #2a2a2a 100%);
+        transform: translateY(-2px);
+    }
 
-        @keyframes appear {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+    .page {
+        margin-top: 20px;
+        display: none;
+        max-width: 400px;
+        width: 100%;
+    }
 
-        .reward-value {
-            font-size: 16px;
-            color: #ffd700;
-            font-weight: bold;
-            margin-top: 1px;
-        }
+    .page.active {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 200px);
+    }
 
-        .open-button {
-            margin-top: 5px;
-            background: #ff6b35;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
-            margin-bottom: 10px;
-        }
+    /* Mining Section */
+    .mining-container {
+        text-align: center;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border-radius: 20px;
+        padding: 25px;
+        border: 2px solid #ffd700;
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+    }
 
-        .open-button:disabled {
-            background: #666;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+    .mining-time {
+        font-size: 18px;
+        color: #ffd700;
+        font-weight: bold;
+        margin: 15px 0;
+        text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
 
-        .open-button:active:not(:disabled) {
-            transform: scale(0.95);
-        }
+    .mining-progress {
+        width: 100%;
+        height: 25px;
+        background: #000000;
+        border-radius: 12px;
+        margin: 20px 0;
+        overflow: hidden;
+        border: 2px solid #ffd700;
+        position: relative;
+    }
 
-        .navigation {
-            display: flex;
-            gap: 15px;
-            max-width: 400px;
-            width: 100%;
-        }
+    .mining-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #ff6b35, #ffd700, #ffed4a);
+        border-radius: 10px;
+        transition: width 0.5s ease;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .nav-button {
-            flex: 1;
-            background: #2b5278;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
+    .mining-progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        animation: loading 1.5s infinite;
+    }
 
-        .nav-button.active {
-            background: #5e99c0;
-        }
+    @keyframes loading {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
 
-        .page {
-            margin-top: 20px;
-            display: none;
-            max-width: 400px;
-            width: 100%;
-        }
+    .mining-stats {
+        display: flex;
+        justify-content: space-between;
+        color: #ffed4a;
+        font-size: 14px;
+        margin-top: 15px;
+        font-weight: 600;
+    }
 
-        .page.active {
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 200px);
-        }
+    .mine-button {
+        margin-top: 15px;
+        background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+        color: #000000;
+        border: none;
+        padding: 16px 40px;
+        border-radius: 30px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        border: 2px solid #000000;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
 
-        .inventory-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+    .mine-button:disabled {
+        background: linear-gradient(135deg, #666666 0%, #888888 100%);
+        cursor: not-allowed;
+        box-shadow: none;
+        color: #cccccc;
+    }
 
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-            overflow-y: auto;
-            max-height: calc(100vh - 300px);
-            padding-right: 5px;
-        }
+    .mine-button:active:not(:disabled) {
+        transform: scale(0.95);
+    }
 
-        .inventory-grid::-webkit-scrollbar {
-            width: 6px;
-        }
+    .mine-button:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+    }
 
-        .inventory-grid::-webkit-scrollbar-track {
-            background: #1e3a5c;
-            border-radius: 3px;
-        }
+    /* Boxes Section */
+    .boxes-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-top: 20px;
+        max-width: 400px;
+        width: 100%;
+    }
 
-        .inventory-grid::-webkit-scrollbar-thumb {
-            background: #5e99c0;
-            border-radius: 3px;
-        }
+    .box-item {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        border: 2px solid #ffd700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
 
-        .inventory-grid::-webkit-scrollbar-thumb:hover {
-            background: #7ab3e0;
-        }
+    .box-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #ffd700, #ffed4a, #ffd700);
+    }
 
-        .inventory-item {
-            background: #2b5278;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            border: 2px solid #5e99c0;
-            position: relative;
-            min-height: 120px;
-        }
+    .box-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+    }
 
-        .inventory-image {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            -webkit-user-drag: none;
-            -khtml-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
-            user-drag: none;
-            pointer-events: none;
-        }
+    .box-item:active {
+        transform: scale(0.95);
+    }
 
-        .item-value {
-            font-size: 12px;
-            color: #ffd700;
-            font-weight: bold;
-        }
+    .box-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+    }
 
-        .sell-button {
-            background: #ff6b35;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 5px;
-            width: 100%;
-        }
+    .box-name {
+        font-size: 16px;
+        color: #ffed4a;
+        margin-bottom: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
 
-        .withdraw-button {
-            background: #ff6b35;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-            margin-top: auto;
-        }
+    .box-price {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ffd700;
+        text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
 
-        .withdraw-button:disabled {
-            background: #666;
-            cursor: not-allowed;
-        }
+    /* Inventory Section */
+    .inventory-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border-radius: 20px;
+        padding: 20px;
+        border: 2px solid #ffd700;
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+    }
 
-        .timer {
-            font-size: 14px;
-            color: #a8c7e0;
-            margin-top: 5px;
-        }
+    .inventory-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+        overflow-y: auto;
+        max-height: calc(100vh - 350px);
+        padding-right: 8px;
+        touch-action: pan-y;
+    }
 
-        .no-copy {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-user-drag: none;
-            -khtml-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
-            user-drag: none;
-            pointer-events: none;
-        }
+    .inventory-grid::-webkit-scrollbar {
+        width: 8px;
+    }
 
-        .special-bonus {
-            color: #ffd700;
-            font-size: 12px;
-            margin-top: 5px;
-            font-weight: bold;
-        }
+    .inventory-grid::-webkit-scrollbar-track {
+        background: #000000;
+        border-radius: 4px;
+    }
 
-        .confirmation-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
+    .inventory-grid::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+        border-radius: 4px;
+    }
 
-        .confirmation-content {
-            background: #2b5278;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 300px;
-            width: 90%;
-        }
+    .inventory-grid::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #ffed4a 0%, #ffff80 100%);
+    }
 
-        .confirmation-text {
-            color: white;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
+    .inventory-item {
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        border-radius: 15px;
+        padding: 15px;
+        text-align: center;
+        border: 2px solid #ffd700;
+        position: relative;
+        min-height: 140px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+    }
 
-        .confirmation-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
+    .inventory-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+    }
 
-        .confirm-button {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+    .inventory-image {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        border: 2px solid #ffd700;
+        -webkit-user-drag: none;
+        user-drag: none;
+        pointer-events: none;
+    }
 
-        .cancel-button {
-            background: #5e99c0;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+    .item-value {
+        font-size: 14px;
+        color: #ffd700;
+        font-weight: bold;
+        margin-bottom: 8px;
+        text-shadow: 0 0 3px rgba(255, 215, 0, 0.5);
+    }
 
-        .empty-inventory {
-            text-align: center;
-            color: #a8c7e0;
-            font-size: 16px;
-            padding: 40px 20px;
-            grid-column: 1 / -1;
-        }
-    </style>
+    .sell-button {
+        background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+        color: #000000;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 5px;
+        width: 100%;
+        border: 1px solid #000000;
+        transition: all 0.3s ease;
+    }
+
+    .sell-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    }
+
+    .withdraw-button {
+        background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+        color: #000000;
+        border: none;
+        padding: 18px;
+        border-radius: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s ease;
+        margin-top: auto;
+        border: 2px solid #000000;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+    }
+
+    .withdraw-button:disabled {
+        background: linear-gradient(135deg, #666666 0%, #888888 100%);
+        cursor: not-allowed;
+        color: #cccccc;
+        box-shadow: none;
+    }
+
+    .withdraw-button:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+    }
+
+    .empty-inventory {
+        text-align: center;
+        color: #ffed4a;
+        font-size: 18px;
+        padding: 50px 20px;
+        grid-column: 1 / -1;
+        font-weight: 600;
+    }
+
+    .special-bonus {
+        color: #ff6b35;
+        font-size: 14px;
+        margin-top: 8px;
+        font-weight: bold;
+        text-shadow: 0 0 3px rgba(255, 107, 53, 0.5);
+    }
+
+    /* Modal Styles */
+    .confirmation-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .confirmation-content {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        max-width: 320px;
+        width: 90%;
+        border: 3px solid #ffd700;
+        box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+    }
+
+    .confirmation-text {
+        color: #ffed4a;
+        margin-bottom: 25px;
+        font-size: 16px;
+        line-height: 1.5;
+        font-weight: 600;
+    }
+
+    .confirmation-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .confirm-button {
+        background: linear-gradient(135deg, #ff4444 0%, #ff6666 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        border: 2px solid #ffffff;
+        transition: all 0.3s ease;
+    }
+
+    .cancel-button {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+        color: #000000;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        border: 2px solid #000000;
+        transition: all 0.3s ease;
+    }
+
+    .confirm-button:hover,
+    .cancel-button:hover {
+        transform: scale(1.05);
+    }
+
+    .no-copy {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-user-drag: none;
+        user-drag: none;
+        pointer-events: none;
+    }
+
+    .timer {
+        font-size: 14px;
+        color: #ffed4a;
+        margin-top: 10px;
+        font-weight: 600;
+    }
+</style>
 </head>
 <body>
     <div class="profile-card">
@@ -496,6 +662,7 @@
 
     <div class="navigation">
         <button class="nav-button active" onclick="showPage('main')">Главная</button>
+        <button class="nav-button" onclick="showPage('boxes')">Боксы</button>
         <button class="nav-button" onclick="showPage('inventory')">Инвентарь</button>
     </div>
 
@@ -507,11 +674,42 @@
             <button class="admin-reset-button" id="adminResetButton" style="display: none;">Сброс 🔄</button>
         </div>
 
-        <div class="box-container">
-            <div class="box closed no-copy" id="box"></div>
-            <div class="reward-value" id="rewardValue"></div>
-            <button class="open-button" id="openButton" disabled>Открыть за 100 звёзд</button>
+        <div class="mining-container">
+            <div class="mining-time" id="miningTime">Майнинг не запущен</div>
+            <div class="mining-progress">
+                <div class="mining-progress-bar" id="miningProgressBar" style="width: 0%"></div>
+            </div>
+            <div class="mining-stats">
+                <span id="minedAmount">Добыто: 0</span>
+                <span id="nextReward">Следующая награда: 00:10:00</span>
+            </div>
+            <button class="mine-button" id="mineButton">Начать майнинг</button>
             <div class="timer" id="timer"></div>
+        </div>
+    </div>
+
+    <div class="page" id="boxes-page">
+        <div class="boxes-container">
+            <div class="box-item" onclick="openBox(150)">
+                <div class="box-icon">📦</div>
+                <div class="box-name">Обычный бокс</div>
+                <div class="box-price">150 звёзд</div>
+            </div>
+            <div class="box-item" onclick="openBox(300)">
+                <div class="box-icon">🎁</div>
+                <div class="box-name">Редкий бокс</div>
+                <div class="box-price">300 звёзд</div>
+            </div>
+            <div class="box-item" onclick="openBox(500)">
+                <div class="box-icon">💎</div>
+                <div class="box-name">Эпический бокс</div>
+                <div class="box-price">500 звёзд</div>
+            </div>
+            <div class="box-item" onclick="openBox(1000)">
+                <div class="box-icon">👑</div>
+                <div class="box-name">Легендарный бокс</div>
+                <div class="box-price">1000 звёзд</div>
+            </div>
         </div>
     </div>
 
@@ -614,7 +812,13 @@
                 tokens: initialTokens,
                 inventory: [],
                 initialized: true,
-                isSpecialUser: isOwner
+                isSpecialUser: isOwner,
+                mining: {
+                    active: false,
+                    startTime: null,
+                    totalMined: 0,
+                    lastRewardTime: null
+                }
             };
             
             const userKey = getUserKey();
@@ -648,7 +852,13 @@
                 tokens: isOwner ? 5000 : 100,
                 inventory: [],
                 initialized: true,
-                isSpecialUser: isOwner
+                isSpecialUser: isOwner,
+                mining: {
+                    active: false,
+                    startTime: null,
+                    totalMined: 0,
+                    lastRewardTime: null
+                }
             };
             
             localStorage.setItem(userKey, JSON.stringify(resetData));
@@ -680,12 +890,15 @@
         let userData = getUserData();
         let tokens = userData.tokens || 0;
         let inventory = userData.inventory || [];
-        let timerInterval = null;
+        let miningData = userData.mining || {
+            active: false,
+            startTime: null,
+            totalMined: 0,
+            lastRewardTime: null
+        };
 
-        const box = document.getElementById('box');
-        const openButton = document.getElementById('openButton');
+        const mineButton = document.getElementById('mineButton');
         const balanceElement = document.getElementById('balance');
-        const rewardValueElement = document.getElementById('rewardValue');
         const timerElement = document.getElementById('timer');
         const inventoryGrid = document.getElementById('inventory-grid');
         const inventoryCount = document.getElementById('inventory-count');
@@ -694,6 +907,13 @@
         const adminRefreshButton = document.getElementById('adminRefreshButton');
         const adminResetButton = document.getElementById('adminResetButton');
         const resetModal = document.getElementById('resetModal');
+        const miningTimeElement = document.getElementById('miningTime');
+        const miningProgressBar = document.getElementById('miningProgressBar');
+        const minedAmountElement = document.getElementById('minedAmount');
+        const nextRewardElement = document.getElementById('nextReward');
+
+        let miningInterval = null;
+        let rewardInterval = null;
 
         if (userData.isSpecialUser) {
             specialBonusElement.textContent = '⭐ Владелец бота';
@@ -729,22 +949,40 @@
             }
         ];
 
+        const boxRewards = {
+            150: [
+                { value: 50, chance: 40 },
+                { value: 100, chance: 30 },
+                { value: 200, chance: 20 },
+                { value: 300, chance: 10 }
+            ],
+            300: [
+                { value: 100, chance: 35 },
+                { value: 200, chance: 30 },
+                { value: 400, chance: 20 },
+                { value: 600, chance: 15 }
+            ],
+            500: [
+                { value: 200, chance: 30 },
+                { value: 400, chance: 25 },
+                { value: 700, chance: 25 },
+                { value: 1000, chance: 20 }
+            ],
+            1000: [
+                { value: 500, chance: 25 },
+                { value: 800, chance: 25 },
+                { value: 1200, chance: 25 },
+                { value: 2000, chance: 25 }
+            ]
+        };
+
         function adminAddStars() {
             if (!userData.isSpecialUser) return;
             
             tokens += 5000;
             updateBalance();
             
-            rewardValueElement.textContent = '+5000 звёзд! 🎉';
-            rewardValueElement.style.color = '#4CAF50';
-            
-            setTimeout(() => {
-                if (!box.classList.contains('open')) {
-                    rewardValueElement.textContent = '';
-                    rewardValueElement.style.color = '#ffd700';
-                }
-            }, 3000);
-            
+            showRewardMessage('+5000 звёзд! 🎉', '#4CAF50');
             console.log('Админ добавил 5000 звёзд. Новый баланс:', tokens);
         }
 
@@ -758,21 +996,15 @@
             userData = newUserData;
             tokens = userData.tokens;
             inventory = userData.inventory;
+            miningData = userData.mining;
             
+            stopMining();
             updateBalance();
             updateInventory();
+            updateMiningUI();
             resetModal.style.display = 'none';
             
-            rewardValueElement.textContent = 'Данные сброшены! 🔄';
-            rewardValueElement.style.color = '#4CAF50';
-            
-            setTimeout(() => {
-                if (!box.classList.contains('open')) {
-                    rewardValueElement.textContent = '';
-                    rewardValueElement.style.color = '#ffd700';
-                }
-            }, 3000);
-            
+            showRewardMessage('Данные сброшены! 🔄', '#4CAF50');
             console.log('Данные сброшены. Новый баланс:', tokens);
         }
 
@@ -780,7 +1012,8 @@
             resetModal.style.display = 'none';
         }
 
-        function getRandomReward() {
+        function getRandomReward(boxPrice) {
+            const rewards = boxRewards[boxPrice];
             const totalChance = rewards.reduce((sum, item) => sum + item.chance, 0);
             let random = Math.random() * totalChance;
             
@@ -791,7 +1024,7 @@
                 random -= item.chance;
             }
             
-            return rewards[rewards.length - 1]; 
+            return rewards[rewards.length - 1];
         }
 
         function showPage(pageName) {
@@ -812,14 +1045,13 @@
 
         function updateBalance() {
             balanceElement.textContent = tokens;
-            openButton.disabled = tokens < 100;
-            openButton.textContent = tokens >= 100 ? 'Открыть за 100 токенов' : `Нужно ещё ${100 - tokens} токенов`;
             
             const saveData = {
                 tokens: tokens,
                 inventory: inventory,
                 initialized: true,
-                isSpecialUser: userData.isSpecialUser
+                isSpecialUser: userData.isSpecialUser,
+                mining: miningData
             };
             
             saveUserData(saveData);
@@ -855,71 +1087,203 @@
             updateBalance();
             updateInventory();
             
-            rewardValueElement.textContent = `Продано за ${item.value} токенов!`;
+            showRewardMessage(`Продано за ${item.value} токенов!`);
+        }
+
+        function showRewardMessage(message, color = '#ffd700') {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            messageElement.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(43, 82, 120, 0.9);
+                color: ${color};
+                padding: 15px 25px;
+                border-radius: 10px;
+                font-weight: bold;
+                font-size: 18px;
+                z-index: 1001;
+                animation: fadeInOut 2s ease-in-out;
+            `;
+            
+            document.body.appendChild(messageElement);
+            
             setTimeout(() => {
-                if (!box.classList.contains('open')) {
-                    rewardValueElement.textContent = '';
-                }
+                document.body.removeChild(messageElement);
             }, 2000);
         }
 
-        function startTimer(duration) {
-            let timeLeft = duration;
-            
-            if (timerInterval) clearInterval(timerInterval);
-            
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    resetBox();
-                }
-            }, 1000);
-        }
+        function openBox(price) {
+            if (tokens < price) {
+                showRewardMessage(`Недостаточно звёзд! Нужно ${price}`, '#ff4444');
+                return;
+            }
 
-        function openBox() {
-            if (tokens < 100) return;
-
-            tokens -= 100;
+            tokens -= price;
             updateBalance();
 
-            box.classList.remove('closed');
-            box.classList.add('open');
-            openButton.disabled = true;
-            
-            const randomReward = getRandomReward();
-            
-            setTimeout(() => {
-                box.innerHTML = `<img src="${randomReward.image}" alt="${randomReward.name}" class="reward-image no-copy">`;
-                rewardValueElement.textContent = `${randomReward.value} звёзд`;
-                
-                inventory.push(randomReward);
-                updateInventory();
-                
-                startTimer(3);
-            }, 300);
+            const reward = getRandomReward(price);
+            tokens += reward.value;
+            updateBalance();
+
+            showRewardMessage(`+${reward.value} звёзд из бокса! 🎁`, '#4CAF50');
         }
 
-        function resetBox() {
-            box.classList.remove('open');
-            box.classList.add('closed');
-            box.innerHTML = '';
-            rewardValueElement.textContent = '';
-            timerElement.textContent = '';
-            openButton.disabled = tokens < 100;
-            if (timerInterval) clearInterval(timerInterval);
+        function startMining() {
+            if (miningData.active) return;
+            
+            miningData.active = true;
+            miningData.startTime = Date.now();
+            miningData.lastRewardTime = Date.now();
+            miningData.totalMined = 0;
+            
+            mineButton.disabled = true;
+            mineButton.textContent = 'Майнинг активен...';
+            
+            updateMiningUI();
+            startMiningTimers();
+            
+            const saveData = {
+                tokens: tokens,
+                inventory: inventory,
+                initialized: true,
+                isSpecialUser: userData.isSpecialUser,
+                mining: miningData
+            };
+            
+            saveUserData(saveData);
         }
 
-        openButton.addEventListener('click', openBox);
+        function stopMining() {
+            miningData.active = false;
+            mineButton.disabled = false;
+            mineButton.textContent = 'Начать майнинг';
+            
+            if (miningInterval) {
+                clearInterval(miningInterval);
+                miningInterval = null;
+            }
+            
+            if (rewardInterval) {
+                clearInterval(rewardInterval);
+                rewardInterval = null;
+            }
+            
+            updateMiningUI();
+        }
+
+        function startMiningTimers() {
+            miningInterval = setInterval(updateMiningUI, 1000);
+
+            rewardInterval = setInterval(() => {
+                if (!miningData.active) return;
+                
+                const rewards = [0.2, 0.5, 0.1, 0.7];
+                const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+                
+                tokens += randomReward;
+                miningData.totalMined += randomReward;
+                miningData.lastRewardTime = Date.now();
+                
+                updateBalance();
+                updateMiningUI();
+                
+                showRewardMessage(`+${randomReward.toFixed(1)} звёзд! ⛏️`, '#4CAF50');
+                
+            }, 10 * 60 * 1000); 
+        }
+
+        function updateMiningUI() {
+            if (!miningData.active) {
+                miningTimeElement.textContent = 'Майнинг не запущен';
+                miningProgressBar.style.width = '0%';
+                minedAmountElement.textContent = 'Добыто: 0';
+                nextRewardElement.textContent = 'Следующая награда: 00:10:00';
+                return;
+            }
+            
+            const now = Date.now();
+            const elapsed = now - miningData.startTime;
+            const totalTime = 3 * 60 * 60 * 1000; 
+            
+            const progress = Math.min((elapsed / totalTime) * 100, 100);
+            miningProgressBar.style.width = progress + '%';
+            
+            const timeLeft = Math.max(totalTime - elapsed, 0);
+            const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            
+            miningTimeElement.textContent = `Майнинг активен: ${formatTime(hoursLeft)}:${formatTime(minutesLeft)}:${formatTime(secondsLeft)}`;
+            
+            const timeToNextReward = Math.max(10 * 60 * 1000 - (now - miningData.lastRewardTime), 0);
+            const minutesToReward = Math.floor(timeToNextReward / (1000 * 60));
+            const secondsToReward = Math.floor((timeToNextReward % (1000 * 60)) / 1000);
+
+            nextRewardElement.textContent = `Следующая награда: ${formatTime(minutesToReward)}:${formatTime(secondsToReward)}`;
+            minedAmountElement.textContent = `Добыто: ${miningData.totalMined.toFixed(1)}`;
+
+            if (elapsed >= totalTime) {
+                stopMining();
+                showRewardMessage('Майнинг завершен! 🎉', '#4CAF50');
+            }
+        }
+
+        function formatTime(time) {
+            return time < 10 ? '0' + time : time;
+        }
+
+        function checkExistingMining() {
+            if (miningData.active && miningData.startTime) {
+                const now = Date.now();
+                const elapsed = now - miningData.startTime;
+                const totalTime = 3 * 60 * 60 * 1000;
+                
+                if (elapsed < totalTime) {
+                    startMiningTimers();
+                    mineButton.disabled = true;
+                    mineButton.textContent = 'Майнинг активен...';
+                } else {
+                    stopMining();
+                    miningData.active = false;
+                }
+            }
+        }
+
+        mineButton.addEventListener('click', startMining);
         withdrawButton.addEventListener('click', function() {
             alert('Функция вывода скоро будет доступна!');
         });
         adminRefreshButton.addEventListener('click', adminAddStars);
         adminResetButton.addEventListener('click', requestReset);
 
+        let startY = 0;
+        let currentY = 0;
+
+        inventoryGrid.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+        });
+
+        inventoryGrid.addEventListener('touchmove', function(e) {
+            currentY = e.touches[0].clientY;
+        });
+
+        inventoryGrid.addEventListener('touchend', function(e) {
+            const diff = startY - currentY;
+            if (diff > 50) {
+                inventoryGrid.scrollBy({ top: 100, behavior: 'smooth' });
+            }
+            else if (diff < -50) {
+                inventoryGrid.scrollBy({ top: -100, behavior: 'smooth' });
+            }
+        });
+
         updateBalance();
         updateInventory();
+        checkExistingMining();
+        updateMiningUI();
 
         console.log('=== СИСТЕМА ИНИЦИАЛИЗИРОВАНА ===');
         console.log('Текущий пользователь:', user);
@@ -928,8 +1292,21 @@
         console.log('Это владелец:', userData.isSpecialUser);
         console.log('Текущие токены:', tokens);
         console.log('Размер инвентаря:', inventory.length);
+        console.log('Статус майнинга:', miningData.active);
         console.log('============================');
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translate(-50%, -60%); }
+                20% { opacity: 1; transform: translate(-50%, -50%); }
+                80% { opacity: 1; transform: translate(-50%, -50%); }
+                100% { opacity: 0; transform: translate(-50%, -40%); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
+
 
